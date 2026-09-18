@@ -1,10 +1,11 @@
 (() => {
 'use strict';
-const defaults = Object.freeze({ own: true, visual: true, seconds: 60 });
+const defaults = Object.freeze({ own: true, visual: true, hover: false, seconds: 60 });
 function settings(value) {
   return {
     own: typeof value?.own === 'boolean' ? value.own : defaults.own,
     visual: typeof value?.visual === 'boolean' ? value.visual : defaults.visual,
+    hover: typeof value?.hover === 'boolean' ? value.hover : defaults.hover,
     seconds: Number.isFinite(value?.seconds) ? Math.max(1, Math.min(600, Math.round(value.seconds))) : defaults.seconds
   };
 }
@@ -45,6 +46,8 @@ let config = loadSettings();
 let status = '待機中';
 let statusNode;
 let skipOnce = false;
+// Capture before traQ's router changes the initial URL.
+const settingsRequested = new URL(location.href).searchParams.get('traq-flow-settings') === '1';
 function loadSettings() {
   try { return settings(JSON.parse(localStorage.getItem(KEY))); } catch { return settings(); }
 }
@@ -218,6 +221,7 @@ function collectRows(root) {
   return rows;
 }
 function refreshVisual() {
+  document.documentElement.classList.toggle('tqf-hover-enabled', config.hover);
   const root = document.querySelector('#app')?._vnode;
   const rows = config.visual && root ? collectRows(root) : new Map();
   const desired = new Set();
@@ -237,41 +241,50 @@ function mount() {
     .tqf-continuation > [class*="messageContents"] > [class*="userIcon"] { visibility: hidden; }
     .tqf-continuation > [class*="messageContents"] > [class*="messageHeader"] { display: none; }
     .tqf-continuation > [class*="messageContents"] { grid-template-rows: 0 auto 1fr !important; }
-    .tqf-continuation:hover > [class*="messageContents"] > [class*="messageHeader"],
-    .tqf-continuation:focus-within > [class*="messageContents"] > [class*="messageHeader"] { display: inline-flex; }
-    .tqf-continuation:hover > [class*="messageContents"],
-    .tqf-continuation:focus-within > [class*="messageContents"] { grid-template-rows: 20px auto 1fr !important; }
+    .tqf-hover-enabled .tqf-continuation:hover > [class*="messageContents"] > [class*="messageHeader"],
+    .tqf-hover-enabled .tqf-continuation:focus-within > [class*="messageContents"] > [class*="messageHeader"] { display: inline-flex; }
+    .tqf-hover-enabled .tqf-continuation:hover > [class*="messageContents"],
+    .tqf-hover-enabled .tqf-continuation:focus-within > [class*="messageContents"] { grid-template-rows: 20px auto 1fr !important; }
   `;
   document.head.append(style);
   const host = document.createElement('div');
   host.id = 'traq-flow-panel';
+  host.hidden = !settingsRequested;
   host.style.cssText = 'position:fixed;right:16px;top:64px;z-index:2147483646';
   const shadow = host.attachShadow({ mode: 'open' });
   shadow.innerHTML = `<style>
     :host{font:14px/1.6 system-ui,sans-serif;color:#172b3a}button,input{font:inherit}
     button{cursor:pointer;border:1px solid #a7babc;border-radius:9px;padding:6px 12px;background:#f7fffc;color:#173e35}
     button:focus-visible,input:focus-visible{outline:3px solid #138a72;outline-offset:2px}
-    #toggle{float:right;box-shadow:0 2px 10px #0002}section{clear:both;width:min(300px,calc(100vw - 56px));padding:18px;background:#fff;border:1px solid #ccd8d8;border-radius:12px;box-shadow:0 8px 32px #0003}
+    #close{float:right}section{max-height:calc(100dvh - 120px);overflow:auto;width:min(300px,calc(100vw - 56px));padding:18px;background:#fff;border:1px solid #ccd8d8;border-radius:12px;box-shadow:0 8px 32px #0003}
     h2{font-size:18px;margin:0 0 10px}label{display:block;margin:12px 0}input[type=number]{width:70px;padding:4px}p{font-size:12px;color:#52626b;margin:10px 0}#status{color:#17614d} [hidden]{display:none}
-  </style><button id="toggle" aria-expanded="false" aria-controls="panel">Flow</button>
-  <section id="panel" hidden aria-label="traQ Flow設定"><h2>traQ Flow</h2>
+  </style>
+  <section id="panel" role="dialog" aria-label="traQ Flow設定"><button id="close" aria-label="設定を閉じる">閉じる</button><h2>traQ Flow</h2>
   <label><input id="own" type="checkbox"> 自分の連投を前の投稿に追記</label>
   <label><input id="visual" type="checkbox"> 連続した発言の表示をまとめる</label>
+  <label><input id="hover" type="checkbox"> カーソルを当てると名前・時刻を表示する</label>
   <label>連投の間隔 <input id="seconds" type="number" min="1" max="600" step="1" required> 秒</label>
   <p>追記は全員に反映されます。表示の結合はこのブラウザだけに適用されます。</p>
   <button id="once">次の1回は新規投稿</button>
   <p id="status" role="status" aria-live="polite"></p>
-  <p>変更は自動保存。結合した表示はホバーすると時刻を確認できます。</p></section>`;
+  <p>変更は自動保存。ホバー表示は初期値OFFです。</p></section>`;
   document.body.append(host);
   const $ = id => shadow.getElementById(id);
   statusNode = $('status'); announce(navigator.locks ? status : 'このブラウザでは自動追記は利用できません');
-  function sync() { $('own').checked = config.own; $('visual').checked = config.visual; $('seconds').value = config.seconds; }
+  function sync() { $('own').checked = config.own; $('visual').checked = config.visual; $('hover').checked = config.hover; $('seconds').value = config.seconds; }
   sync();
-  $('toggle').onclick = () => { $('panel').hidden = !$('panel').hidden; $('toggle').setAttribute('aria-expanded', String(!$('panel').hidden)); };
-  shadow.addEventListener('keydown', event => { if (event.key === 'Escape') { $('panel').hidden = true; $('toggle').setAttribute('aria-expanded', 'false'); $('toggle').focus(); } });
-  for (const id of ['own', 'visual', 'seconds']) $(id).onchange = () => {
+  const closeSettings = () => { host.hidden = true; };
+  $('close').onclick = closeSettings;
+  shadow.addEventListener('keydown', event => { if (event.key === 'Escape') closeSettings(); });
+  if (settingsRequested) {
+    const cleanURL = new URL(location.href);
+    cleanURL.searchParams.delete('traq-flow-settings');
+    history.replaceState(history.state, '', cleanURL);
+    $('close').focus();
+  }
+  for (const id of ['own', 'visual', 'hover', 'seconds']) $(id).onchange = () => {
     if (!$('seconds').reportValidity()) return;
-    config = settings({ own: $('own').checked, visual: $('visual').checked, seconds: Number($('seconds').value) });
+    config = settings({ own: $('own').checked, visual: $('visual').checked, hover: $('hover').checked, seconds: Number($('seconds').value) });
     try { localStorage.setItem(KEY, JSON.stringify(config)); announce('設定を保存しました'); }
     catch { announce('設定を保存できません。このタブだけに適用します'); }
     sync(); refreshVisual();

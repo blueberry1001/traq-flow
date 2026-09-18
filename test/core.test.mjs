@@ -6,7 +6,10 @@ const now = Date.parse('2026-09-18T08:00:30Z');
 const message = { id: 'm1', channelId: cid, userId: 'me', content: '最初', createdAt: '2026-09-18T08:00:00Z' };
 const merge = (m = message, body = { content: '続き' }, time = now, recent) => mergeContent(m, 'me', cid, body, 60, time, recent);
 test('settings validate and clamp persisted values', () => {
-  assert.deepEqual(settings(null), { own: true, visual: true, seconds: 60 });
+  assert.deepEqual(settings(null), { own: true, visual: true, hover: false, seconds: 60 });
+  assert.equal(settings({ own: false, seconds: 30 }).hover, false);
+  assert.equal(settings({ hover: true }).hover, true);
+  assert.equal(settings({ hover: 'true' }).hover, false);
   assert.equal(settings({ seconds: Infinity }).seconds, 60);
   assert.equal(settings({ seconds: -20 }).seconds, 1);
   assert.equal(settings({ seconds: 1000 }).seconds, 600);

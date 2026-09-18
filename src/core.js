@@ -1,8 +1,9 @@
-export const defaults = Object.freeze({ own: true, visual: true, seconds: 60 });
+export const defaults = Object.freeze({ own: true, visual: true, hover: false, seconds: 60 });
 export function settings(value) {
   return {
     own: typeof value?.own === 'boolean' ? value.own : defaults.own,
     visual: typeof value?.visual === 'boolean' ? value.visual : defaults.visual,
+    hover: typeof value?.hover === 'boolean' ? value.hover : defaults.hover,
     seconds: Number.isFinite(value?.seconds) ? Math.max(1, Math.min(600, Math.round(value.seconds))) : defaults.seconds
   };
 }

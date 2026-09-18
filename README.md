@@ -10,7 +10,7 @@ traQの短時間の連投をまとめる、非公式のユーザースクリプ�
 
 1. [Tampermonkey](https://www.tampermonkey.net/) をブラウザにインストールします。
 2. [**Greasy ForkのtraQ Flow**](https://greasyfork.org/ja/scripts/596315) を開き、「スクリプトをインストール」を押します。続いてユーザースクリプト管理画面でも「インストール」を押します。
-3. [traQ](https://q.trap.jp/) を再読み込みします。右上の **Flow** ボタンから設定できます。
+3. [traQ](https://q.trap.jp/) を再読み込みします。[設定を開く](https://q.trap.jp/?traq-flow-settings=1) から設定できます。通常のtraQ画面にはボタンを表示しません。
 
 Chromeでスクリプトが動かない場合は、Tampermonkeyの案内に従って「ユーザースクリプトを許可」を有効にしてください。本文がそのまま表示される場合は、管理拡張が有効か確認してください。GitHubからの[直接インストール](https://raw.githubusercontent.com/blueberry1001/traq-flow/main/dist/traq-flow.user.js)も利用できます。
 
@@ -21,6 +21,12 @@ Chromeでスクリプトが動かない場合は、Tampermonkeyの案内に従�
 [Releases](https://github.com/blueberry1001/traq-flow/releases) の `traq-flow-chrome.zip` を展開し、`chrome://extensions` でデベロッパーモードを有効にして「パッケージ化されていない拡張機能を読み込む」から展開先を選んでください。ビルドは不要です。
 
 Chrome Web Storeでの公開・審査完了を意味するものではありません。ストア公開手順は [公開ガイド](docs/PUBLISHING.md) にあります。
+
+## 設定を開く
+
+- ユーザースクリプト版: [設定を開く](https://q.trap.jp/?traq-flow-settings=1)（Greasy Forkの説明にも同じリンクがあります）。
+- Chrome拡張版: 拡張アイコン →「設定を開く」、または拡張機能の詳細 →「拡張機能のオプション」。
+- 設定は自動保存されます。「閉じる」またはEscで非表示にでき、通常の再読み込みでは開きません。
 
 ## 動作の詳細
 
@@ -38,7 +44,7 @@ Chrome Web Storeでの公開・審査完了を意味するものではありま�
 - 元の投稿時刻は変わりません。新着投稿としての通知・未読・並び順は通常投稿と異なります。
 - 編集失敗時は、自動で新規投稿し直しません。標準入力欄に文章が残ります。通信断では編集だけ成功している可能性もあるため、再送前に履歴を確認してください。
 - 最新情報の読み取りに失敗した場合は、元の新規投稿をそのまま行います。
-- 表示結合はチャンネル/DMのメッセージ一覧を対象にします。日付・未読区切り、ピン留め、編集中、リンク先として強調された投稿は越えて結合しません。ホバーで時刻・名前が再表示されます。
+- 表示結合はチャンネル/DMのメッセージ一覧を対象にします。日付・未読区切り、ピン留め、編集中、リンク先として強調された投稿は越えて結合しません。「カーソルを当てると名前・時刻を表示する」でホバー・フォーカス時の再表示を選べます（初期値OFF）。元の表示に戻すには、設定で表示結合をOFFにしてください。
 - traQ APIに条件付き編集（If-Match）の仕組みがないため、別端末や拡張なしのタブとの同時編集を完全には防げません。同一ブラウザ・同一オリジンで本拡張を使うタブはWeb Locksで送信を直列化し、編集直前にも読み直します。
 - 表示結合はVueの描画ツリーとCSSクラスに依存します。traQの将来のUI変更で使えなくなる可能性があります。対応できない構造では表示結合を行いません。
 
@@ -70,3 +76,6 @@ GitHub Actionsでテストと配布ファイルの再現性を確認します。
 - [traQ_S-UI](https://github.com/traPtitech/traQ_S-UI)、[投稿処理](https://github.com/traPtitech/traQ_S-UI/blob/a61b636305a25e3735aeccc934c32dc2fea350a4/src/components/Main/MainView/MessageInput/composables/usePostMessage.ts)
 
 公式traQプロジェクトとは無関係の拡張です。MIT License。
+
+
+
