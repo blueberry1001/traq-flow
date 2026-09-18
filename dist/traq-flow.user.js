@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         traQ Flow — 連投をまとめる
 // @namespace    https://github.com/blueberry1001/traq-flow
-// @version      0.1.0
+// @version      0.1.1
 // @description  自分の連投を直近の投稿に追記し、連続した発言の表示をまとめます。秒数は設定できます。
 // @author       blueberry1001
 // @license      MIT
@@ -174,9 +174,11 @@ proto.send = function(body) {
   });
 };
 window.fetch = async function(input, init) {
-  const request = new Request(input, init);
-  const channel = channelPost(request.method, request.url, location.origin);
+  const method = init?.method ?? (input instanceof Request ? input.method : 'GET');
+  const url = input instanceof Request ? input.url : input;
+  const channel = channelPost(method, url, location.origin);
   if (!channel || !config.own || !navigator.locks) return nativeFetch(input, init);
+  const request = new Request(input, init);
   return lock(channel, request.signal, async () => {
     const body = await request.clone().text();
     const edit = await plan(channel, body, request.signal);

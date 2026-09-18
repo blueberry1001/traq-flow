@@ -125,9 +125,11 @@ proto.send = function(body) {
   });
 };
 window.fetch = async function(input, init) {
-  const request = new Request(input, init);
-  const channel = channelPost(request.method, request.url, location.origin);
+  const method = init?.method ?? (input instanceof Request ? input.method : 'GET');
+  const url = input instanceof Request ? input.url : input;
+  const channel = channelPost(method, url, location.origin);
   if (!channel || !config.own || !navigator.locks) return nativeFetch(input, init);
+  const request = new Request(input, init);
   return lock(channel, request.signal, async () => {
     const body = await request.clone().text();
     const edit = await plan(channel, body, request.signal);
