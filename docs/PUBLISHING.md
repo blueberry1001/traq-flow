@@ -5,7 +5,7 @@
 配布ファイル1つで導入でき、同じコードの更新配布が容易なので、最初の掲載先に適しています。ユーザー側にはTampermonkeyなどの管理拡張が必要です。
 
 1. [Greasy Fork](https://greasyfork.org/ja) にログイン。
-2. [新しいスクリプトを投稿](https://greasyfork.org/ja/scripts/new) を開く。
+2. [新しいスクリプトを投稿](https://greasyfork.org/ja/script_versions/new) を開く。初回は「スクリプトを書いたので、他の人に共有したい」を選ぶ。
 3. `dist/traq-flow.user.js` の全文をコード欄に貼り付ける。
 4. 以下の説明文を設定し、コード・対象サイト・MITライセンスを確認して公開する。
 5. 掲載URLをREADMEの導入リンクに追加する。更新時はバージョンを上げ、同じ掲載ページを更新する。
