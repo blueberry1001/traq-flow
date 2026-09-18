@@ -9,10 +9,10 @@ traQの短時間の連投をまとめる、非公式のユーザースクリプ�
 ## インストール（おすすめ）
 
 1. [Tampermonkey](https://www.tampermonkey.net/) をブラウザにインストールします。
-2. [**traQ Flowをインストール**](https://raw.githubusercontent.com/blueberry1001/traq-flow/main/dist/traq-flow.user.js) を開き、ユーザースクリプト管理画面で「インストール」を押します。
+2. [**Greasy ForkのtraQ Flow**](https://greasyfork.org/ja/scripts/596315) を開き、「スクリプトをインストール」を押します。続いてユーザースクリプト管理画面でも「インストール」を押します。
 3. [traQ](https://q.trap.jp/) を再読み込みします。右上の **Flow** ボタンから設定できます。
 
-Chromeでスクリプトが動かない場合は、Tampermonkeyの案内に従って「ユーザースクリプトを許可」を有効にしてください。本文がそのまま表示される場合は、管理拡張が有効か確認してください。
+Chromeでスクリプトが動かない場合は、Tampermonkeyの案内に従って「ユーザースクリプトを許可」を有効にしてください。本文がそのまま表示される場合は、管理拡張が有効か確認してください。GitHubからの[直接インストール](https://raw.githubusercontent.com/blueberry1001/traq-flow/main/dist/traq-flow.user.js)も利用できます。
 
 対応対象は `https://q.trap.jp/` のブラウザ版です。PC上のChrome 116以降を前提に検証しています。ユーザースクリプトとChrome拡張はどちらか一方だけ導入してください。traQのネイティブアプリやService Workerからの通知返信は対象外です。
 
