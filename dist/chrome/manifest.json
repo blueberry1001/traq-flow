@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "traQ Flow",
+  "version": "0.1.0",
+  "minimum_chrome_version": "116",
+  "description": "traQの連投を直近メッセージへの追記に変換し、連続した発言の表示をまとめます。",
+  "homepage_url": "https://github.com/blueberry1001/traq-flow",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://q.trap.jp/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}
